@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'title.note_list'|trans }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'title.note_list'|trans }}</h1>
+    {% if pagination is defined and pagination.items|length %}
+
+        <div class="navigation text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(pagination, 'label.id'|trans, 'note.id') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'note.createdAt') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'note.updatedAt') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'note.title') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.content'|trans, 'note.content') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.category'|trans, 'category.title') }}</th>
+                <th colspan="3">{{ 'label.actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for note in pagination.items %}
+                <tr>
+                    <td>{{ note.id }}</td>
+                    <td>{{ note.createdAt|format_date('long') }}</td>
+                    <td>{{ note.updatedAt|format_date('long') }}</td>
+                    <td>{{ note.title }}</td>
+                    <td>{{ note.content }}</td>
+                    <td>
+                        <a href="{{ url('note_index', {'filters.category_id' : note.category.id}) }}" title="{{ note.category.title }}">
+                            {{ note.category.title }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if is_granted('VIEW', note) %}
+                            <a class="btn btn-outline-primary" href="{{ url('note_show', {id: note.id}) }}" title="{{ 'action.show'|trans }}">
+                                {{ 'action.show'|trans }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('EDIT', note) %}
+                            <a class="btn btn-outline-success" href="{{ url('note_edit', {id: note.id}) }}" title="{{ 'action.edit'|trans }}">
+                                {{ 'action.edit'|trans }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('DELETE', note) %}
+                            <a class="btn btn-outline-danger" href="{{ url('note_delete', {id: note.id}) }}" title="{{ 'action.delete'|trans }}">
+                                {{ 'action.delete'|trans }}
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+
+
+    {% else %}
+        <p>
+            {% include 'default/_single_alert_message.html.twig' with {
+                type: 'warning',
+                message: 'message.empty_list'|trans
+            } %}
+        </p>
+    {% endif %}
+
+    <div class="flexMarginRight">
+        <div class="navigation text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+        <a class="btn btn-outline-success" href="{{ url('note_create') }}" title="{{ 'action.create' | trans }}" >
+            {{ 'action.create' | trans }}
+        </a>
+    </div>
+{% endblock %}
